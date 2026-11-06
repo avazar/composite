@@ -25,3 +25,10 @@ test('модуль FEM сохраняет язык и работает под п
     assert.equal(new URL(topicHref('../', lang, 'file:'), fem).href, `file:///C:/course/site/index.html?lang=${lang}`);
   }
 });
+
+test('модуль сетчатых оболочек доступен под префиксом Pages и с диска', () => {
+  for (const lang of ['ru', 'en']) {
+    assert.equal(new URL(topicHref('./lattice/', lang, 'https:'), 'https://avazar.github.io/composite/').href, `https://avazar.github.io/composite/lattice/?lang=${lang}`);
+    assert.equal(new URL(topicHref('./lattice/', lang, 'file:'), 'file:///C:/course/site/index.html').href, `file:///C:/course/site/lattice/index.html?lang=${lang}`);
+  }
+});

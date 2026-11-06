@@ -17,7 +17,7 @@ const copy = {
     label: 'Интерактивные учебные модули',
     heading: <>Механика композитов<br />и конструкций</>,
     intro: 'От модели — к пониманию. Исследуйте поведение материалов и конструкций: меняйте параметры, сравнивайте результаты и проверяйте свои предположения.',
-    topics: 'Темы', count: '02 / доступны',
+    topics: 'Темы', count: '03 / доступны',
     category: 'Механика композитов',
     strength: 'Прочность слоистых композитов',
     description: 'От разрушения отдельного слоя до потери несущей способности пакета. Критерии прочности, предельные поверхности и виртуальные испытания.',
@@ -31,13 +31,17 @@ const copy = {
     femDescription: 'Как из отдельных элементов получается решение всей задачи. Матрицы жёсткости, граничные условия и точность на примере растяжения и сжатия стержня.',
     femSteps: 'По шагам · от элемента до решения', femExperiment: 'Эксперимент · схемы, нагрузки и сетка',
     femDiagram: 'Два стержневых конечных элемента и сравнение линейной аппроксимации с точным перемещением',
+    lattice: 'Сетчатые цилиндрические оболочки',
+    latticeDescription: 'Как выбрать угол и размеры рёбер при осевом сжатии. Минимальная масса, прочность и две формы общей потери устойчивости на связанных графиках.',
+    latticeLoad: 'По нагрузке · семейство оптимальных конструкций', latticeAngle: 'Почему такой угол? · геометрия и масса',
+    latticeDiagram: 'Цилиндрическая сетчатая оболочка со спиральными и кольцевыми рёбрами',
   },
   en: {
     title: 'Composite · composite and structural mechanics',
     label: 'Interactive learning modules',
     heading: <>Composite and<br />structural mechanics</>,
     intro: 'From models to understanding. Explore how materials and structures behave: change parameters, compare results and test your assumptions.',
-    topics: 'Topics', count: '02 / available',
+    topics: 'Topics', count: '03 / available',
     category: 'Composite mechanics',
     strength: 'Strength of composite laminates',
     description: 'From the failure of a single ply to the loss of laminate load capacity. Failure criteria, failure surfaces and virtual tests.',
@@ -51,6 +55,10 @@ const copy = {
     femDescription: 'See how individual elements form the complete solution. Stiffness matrices, boundary conditions and accuracy, explored through axial tension and compression of a bar.',
     femSteps: 'Step by step · from element to solution', femExperiment: 'Experiment · supports, loads and mesh',
     femDiagram: 'Two axial finite elements and a comparison of linear interpolation with the exact displacement',
+    lattice: 'Lattice cylindrical shells',
+    latticeDescription: 'Choose rib angles and dimensions under axial compression. Explore minimum mass, strength and two global buckling modes through linked plots.',
+    latticeLoad: 'Load sweep · a family of optimal designs', latticeAngle: 'Why this angle? · geometry and mass',
+    latticeDiagram: 'Lattice cylinder with helical and hoop ribs',
   },
 };
 
@@ -93,6 +101,16 @@ function FemIllustration({ label }) {
     <path d="M65 280Q240 100 415 280" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 5" fill="none" opacity=".6" />
     <path d="M65 280L240 190" stroke="var(--series-1)" stroke-width="2.8" /><path d="M240 190L415 280" stroke="var(--series-2)" stroke-width="2.8" />
     <circle cx="240" cy="190" r="4" fill="var(--surface)" stroke="currentColor" /><text x="78" y="198" class="diagram-labels" fill="currentColor">u(x)</text>
+  </svg>;
+}
+
+function LatticeIllustration({ label }) {
+  const point = (z, a) => [240 + 95 * Math.cos(a), 170 - z + 25 * Math.sin(a)];
+  const line = pts => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x},${y}`).join(' ');
+  return <svg class="laminate-illustration" viewBox="0 0 480 340" role="img" aria-label={label}>
+    {[-1, 1].flatMap(sign => Array.from({ length: 12 }, (_, j) => <path key={`${sign}-${j}`} d={line(Array.from({ length: 65 }, (_, k) => { const z = k * 3.5 - 112; return point(z, j * Math.PI / 6 + sign * z / 160); }))} fill="none" stroke="var(--series-1)" stroke-width="2" opacity=".55" />))}
+    {Array.from({ length: 7 }, (_, j) => <path key={j} d={line(Array.from({ length: 81 }, (_, k) => point(j * 37 - 111, k * Math.PI / 40)))} fill="none" stroke="var(--series-2)" stroke-width="2.2" />)}
+    <path d="M240 8v24m-6-8 6 8 6-8M240 332v-24m-6 8 6-8 6 8" fill="none" stroke="var(--c-tsaiWu)" stroke-width="2" />
   </svg>;
 }
 
@@ -152,6 +170,15 @@ function Home() {
               <p class="eyebrow">{t.femCategory}</p><h3 id="fem-title">{t.fem}</h3>
               <p class="topic-description" id="fem-description">{t.femDescription}</p>
               <ul class="topic-parts"><li>{t.femSteps}</li><li>{t.femExperiment}</li></ul>
+              <span class="topic-open">{t.open}<span aria-hidden="true">↗</span></span>
+            </div>
+          </a>
+          <a class="topic-card" href={topicHref('./lattice/', ui.lang)} aria-labelledby="lattice-title" aria-describedby="lattice-description">
+            <div class="topic-visual"><span class="topic-number" aria-hidden="true">03</span><LatticeIllustration label={t.latticeDiagram} /></div>
+            <div class="topic-content">
+              <p class="eyebrow">{t.femCategory}</p><h3 id="lattice-title">{t.lattice}</h3>
+              <p class="topic-description" id="lattice-description">{t.latticeDescription}</p>
+              <ul class="topic-parts"><li>{t.latticeLoad}</li><li>{t.latticeAngle}</li></ul>
               <span class="topic-open">{t.open}<span aria-hidden="true">↗</span></span>
             </div>
           </a>
