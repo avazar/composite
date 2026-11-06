@@ -16,7 +16,7 @@ const woff2Only = {
 };
 
 const options = {
-  entryPoints: { home: 'src/home/main.jsx', 'strength/app': 'src/main.jsx' },
+  entryPoints: { home: 'src/home/main.jsx', 'strength/app': 'src/main.jsx', 'fem/app': 'src/fem/main.jsx' },
   bundle: true,
   outdir,
   format: 'iife',
@@ -33,11 +33,13 @@ const options = {
 
 await rm(outdir, { recursive: true, force: true });
 await mkdir(`${outdir}/strength`, { recursive: true });
+await mkdir(`${outdir}/fem`, { recursive: true });
 // Метка сборки в адресах app.js и app.css: после обновления сайта браузеры студентов не покажут старую версию из кэша.
 const stamp = Date.now().toString(36);
 for (const [source, target, bundle] of [
   ['src/home/index.html', 'index.html', 'home'],
   ['src/index.html', 'strength/index.html', 'app'],
+  ['src/fem/index.html', 'fem/index.html', 'app'],
 ]) {
   const html = await readFile(source, 'utf8');
   await writeFile(`${outdir}/${target}`, html

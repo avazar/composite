@@ -16,3 +16,12 @@ test('скачанный сайт открывает HTML-файлы при пе
   assert.equal(topic.href, 'file:///C:/course/site/strength/index.html?lang=en');
   assert.equal(new URL(topicHref('../', 'ru', 'file:'), topic).href, 'file:///C:/course/site/index.html?lang=ru');
 });
+
+test('модуль FEM сохраняет язык и работает под префиксом Pages и с диска', () => {
+  for (const lang of ['ru', 'en']) {
+    assert.equal(new URL(topicHref('./fem/', lang, 'https:'), 'https://avazar.github.io/composite/').href, `https://avazar.github.io/composite/fem/?lang=${lang}`);
+    const fem = new URL(topicHref('./fem/', lang, 'file:'), 'file:///C:/course/site/index.html');
+    assert.equal(fem.href, `file:///C:/course/site/fem/index.html?lang=${lang}`);
+    assert.equal(new URL(topicHref('../', lang, 'file:'), fem).href, `file:///C:/course/site/index.html?lang=${lang}`);
+  }
+});

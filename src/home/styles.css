@@ -23,6 +23,7 @@ a { color: inherit; }
 .section-label > span { color: var(--ink-2); font-family: var(--font-mono); font-size: .7rem; }
 .topic-card { display: grid; grid-template-columns: .95fr 1.05fr; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); text-decoration: none; transition: border-color .2s, box-shadow .2s; }
 .topic-card:hover { border-color: var(--m-glass); box-shadow: 0 8px 30px rgba(15,21,28,.06); }
+.topic-card + .topic-card { margin-top: 1.4rem; }
 .topic-card:focus-visible { outline: 3px solid var(--m-glass); outline-offset: 5px; }
 .topic-visual { display: flex; align-items: center; justify-content: center; position: relative; min-height: 22rem; padding: 2rem 1.3rem; border-right: 1px solid var(--line); background-color: var(--surface-2); background-image: radial-gradient(var(--line-strong) .65px, transparent .65px); background-size: 16px 16px; }
 .topic-number { position: absolute; top: 1.2rem; left: 1.4rem; font-family: var(--font-mono); font-size: .8rem; color: var(--ink-2); }

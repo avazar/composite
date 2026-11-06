@@ -17,7 +17,7 @@ const copy = {
     label: 'Интерактивные учебные модули',
     heading: <>Механика композитов<br />и конструкций</>,
     intro: 'От модели — к пониманию. Исследуйте поведение материалов и конструкций: меняйте параметры, сравнивайте результаты и проверяйте свои предположения.',
-    topics: 'Темы', count: '01 / доступна',
+    topics: 'Темы', count: '02 / доступны',
     category: 'Механика композитов',
     strength: 'Прочность слоистых композитов',
     description: 'От разрушения отдельного слоя до потери несущей способности пакета. Критерии прочности, предельные поверхности и виртуальные испытания.',
@@ -27,13 +27,17 @@ const copy = {
     source: 'Исходный код',
     theme: 'Изменить тему оформления', light: 'Светлая тема', dark: 'Тёмная тема',
     diagram: 'Схема слоистого композита с разными направлениями армирования',
+    femCategory: 'Механика конструкций', fem: 'Метод конечных элементов',
+    femDescription: 'Как из отдельных элементов получается решение всей задачи. Матрицы жёсткости, граничные условия и точность на примере растяжения и сжатия стержня.',
+    femSteps: 'По шагам · от элемента до решения', femExperiment: 'Эксперимент · схемы, нагрузки и сетка',
+    femDiagram: 'Два стержневых конечных элемента и сравнение линейной аппроксимации с точным перемещением',
   },
   en: {
     title: 'Composite · composite and structural mechanics',
     label: 'Interactive learning modules',
     heading: <>Composite and<br />structural mechanics</>,
     intro: 'From models to understanding. Explore how materials and structures behave: change parameters, compare results and test your assumptions.',
-    topics: 'Topics', count: '01 / available',
+    topics: 'Topics', count: '02 / available',
     category: 'Composite mechanics',
     strength: 'Strength of composite laminates',
     description: 'From the failure of a single ply to the loss of laminate load capacity. Failure criteria, failure surfaces and virtual tests.',
@@ -43,6 +47,10 @@ const copy = {
     source: 'Source code',
     theme: 'Change color theme', light: 'Light theme', dark: 'Dark theme',
     diagram: 'Composite laminate diagram with different reinforcement directions',
+    femCategory: 'Structural mechanics', fem: 'Finite element method',
+    femDescription: 'See how individual elements form the complete solution. Stiffness matrices, boundary conditions and accuracy, explored through axial tension and compression of a bar.',
+    femSteps: 'Step by step · from element to solution', femExperiment: 'Experiment · supports, loads and mesh',
+    femDiagram: 'Two axial finite elements and a comparison of linear interpolation with the exact displacement',
   },
 };
 
@@ -72,6 +80,20 @@ function LaminateIllustration({ label }) {
       </g>
     </svg>
   );
+}
+
+function FemIllustration({ label }) {
+  return <svg class="laminate-illustration" viewBox="0 0 480 340" role="img" aria-label={label}>
+    <path d="M65 120H415M65 95v50M415 95v50" fill="none" stroke="currentColor" stroke-width="1.6" />
+    <path d="M66 120H240" stroke="var(--series-1)" stroke-width="14" opacity=".35" />
+    <path d="M240 120H414" stroke="var(--series-2)" stroke-width="14" opacity=".35" />
+    {[65, 240, 415].map((x, i) => <g key={x}><circle cx={x} cy="120" r="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5" /><text x={x} y="157" text-anchor="middle" fill="currentColor" class="diagram-labels">u{i + 1}</text></g>)}
+    {[105, 170, 280, 345].map(x => <path key={x} d={`M${x} 80h28m-7-5 7 5-7 5`} fill="none" stroke="var(--c-tsaiWu)" stroke-width="1.7" />)}
+    <path d="M65 280H415M65 280V180" stroke="currentColor" opacity=".3" fill="none" />
+    <path d="M65 280Q240 100 415 280" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 5" fill="none" opacity=".6" />
+    <path d="M65 280L240 190" stroke="var(--series-1)" stroke-width="2.8" /><path d="M240 190L415 280" stroke="var(--series-2)" stroke-width="2.8" />
+    <circle cx="240" cy="190" r="4" fill="var(--surface)" stroke="currentColor" /><text x="78" y="198" class="diagram-labels" fill="currentColor">u(x)</text>
+  </svg>;
 }
 
 function Home() {
@@ -121,6 +143,15 @@ function Home() {
               <h3 id="strength-title">{t.strength}</h3>
               <p class="topic-description" id="strength-description">{t.description}</p>
               <ul class="topic-parts"><li>{t.ply}</li><li>{t.laminate}</li></ul>
+              <span class="topic-open">{t.open}<span aria-hidden="true">↗</span></span>
+            </div>
+          </a>
+          <a class="topic-card" href={topicHref('./fem/', ui.lang)} aria-labelledby="fem-title" aria-describedby="fem-description">
+            <div class="topic-visual"><span class="topic-number" aria-hidden="true">02</span><FemIllustration label={t.femDiagram} /></div>
+            <div class="topic-content">
+              <p class="eyebrow">{t.femCategory}</p><h3 id="fem-title">{t.fem}</h3>
+              <p class="topic-description" id="fem-description">{t.femDescription}</p>
+              <ul class="topic-parts"><li>{t.femSteps}</li><li>{t.femExperiment}</li></ul>
               <span class="topic-open">{t.open}<span aria-hidden="true">↗</span></span>
             </div>
           </a>
