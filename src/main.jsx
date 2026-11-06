@@ -7,8 +7,9 @@ import { CriteriaTab } from './ui/criteria-tab.jsx';
 import { LaminateTab, makePly } from './ui/laminate-tab.jsx';
 import { Tex, loadStored, store } from './ui/common.jsx';
 import { tr, setLang, initialLang } from './i18n.js';
+import { topicHref } from './navigation.js';
 
-const REPO_URL = 'https://github.com/avazar/laminate';
+const REPO_URL = 'https://github.com/avazar/composite';
 const STATE_KEY = 'laminate.state.v1';
 const UI_KEY = 'laminate.ui';
 const reducedMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -55,7 +56,7 @@ const F = {
   matrixStress: '\\sigma_2,\\ \\tau_{12}',
   ratio: '\\sigma_x:\\sigma_y:\\tau_{xy}',
 };
-const repoLink = <a href={REPO_URL} target="_blank" rel="noopener">github.com/avazar/laminate</a>;
+const repoLink = <a href={REPO_URL} target="_blank" rel="noopener">github.com/avazar/composite</a>;
 
 function AboutRu() {
   return (
@@ -73,7 +74,7 @@ function AboutRu() {
         <li>Жёсткость пересчитывается, шаги повторяются, пока пакет способен нести нагрузку. Пакет из нитяных слоёв может оказаться механизмом — тогда расчёт заканчивается: при хрупкой матрице обрушением, при пластичной — площадкой текучести.</li>
       </ol>
       <p>Нагружение пропорциональное: задаётся соотношение <Tex>{F.ratio}</Tex>. Между событиями всё линейно, диаграмма строится точно, без шагов по нагрузке. Остаточные температурные напряжения и расслоение не учитываются.</p>
-      <p class="note">Исходный код и тесты расчётного ядра: {repoLink} (лицензия MIT). Использованы three.js, KaTeX, Preact и шрифты IBM Plex. <a href="THIRD-PARTY-LICENSES.txt" target="_blank" rel="noopener">Лицензии сторонних компонентов</a>.</p>
+      <p class="note">Исходный код и тесты расчётного ядра: {repoLink} (лицензия MIT). Использованы three.js, KaTeX, Preact и шрифты IBM Plex. <a href="../THIRD-PARTY-LICENSES.txt" target="_blank" rel="noopener">Лицензии сторонних компонентов</a>.</p>
       <p class="disclaimer">Сайт создан в учебных целях. Модели упрощены, свойства материалов — типовые, поэтому результаты могут быть неточными и не годятся для проектных расчётов.</p>
     </>
   );
@@ -95,7 +96,7 @@ function AboutEn() {
         <li>The stiffness is recomputed and the steps repeat while the laminate can carry the load. A laminate of netting plies may turn out to be a mechanism; the analysis then stops: with a collapse for the brittle matrix, with a yield plateau for the plastic one.</li>
       </ol>
       <p>Loading is proportional: the ratio <Tex>{F.ratio}</Tex> is prescribed. Between events everything is linear, so the curve is exact, with no load stepping. Residual thermal stresses and delamination are not considered.</p>
-      <p class="note">Source code and solver tests: {repoLink} (MIT license). Built with three.js, KaTeX, Preact and the IBM Plex fonts. <a href="THIRD-PARTY-LICENSES.txt" target="_blank" rel="noopener">Third-party licenses</a>.</p>
+      <p class="note">Source code and solver tests: {repoLink} (MIT license). Built with three.js, KaTeX, Preact and the IBM Plex fonts. <a href="../THIRD-PARTY-LICENSES.txt" target="_blank" rel="noopener">Third-party licenses</a>.</p>
       <p class="disclaimer">This site is an educational tool. The models are simplified and the material properties are typical values, so the results may be inaccurate and must not be used for design.</p>
     </>
   );
@@ -158,6 +159,9 @@ function App() {
   return (
     <>
       <header class="app-head">
+        <a class="catalog-link" href={topicHref('../', ui.lang)}>
+          <span aria-hidden="true">←</span> {tr('nav.allTopics')}
+        </a>
         <div class="brand">
           <svg viewBox="0 0 32 32" aria-hidden="true">
             <path d="M16 5l13 6-13 6-13-6z" fill="var(--m-glass)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round" />

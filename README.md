@@ -1,19 +1,21 @@
-# Laminate · лаборатория прочности
+# Composite · механика композитов и конструкций
 
-[English version below](#laminate--strength-lab)
+[English version below](#composite--composite-and-structural-mechanics)
 
-Учебный сайт о критериях прочности и прогрессивном разрушении слоистых композитов: **https://avazar.github.io/laminate/**
+Каталог учебных модулей: **https://avazar.github.io/composite/**. Первая карточка открывает раздел «Прочность слоистых композитов». В шапке раздела ссылка «Все темы» возвращает в каталог, сохраняя язык. Старый адрес `https://avazar.github.io/laminate/` перенаправляет в раздел прочности с сохранением параметров и вкладки.
+
+Учебный раздел о критериях прочности и прогрессивном разрушении слоистых композитов: **https://avazar.github.io/composite/strength/**
 
 - **Слой.** Предельные поверхности в осях σ₁, σ₂, τ₁₂ для семи критериев (максимальных напряжений, аппроксимационного по В. В. Васильеву, Цая–Ву, Хашина, максимальных деформаций, Цая–Хилла, Хоффмана) и три среза: σ₁–σ₂, σ₁–τ₁₂, σ₂–τ₁₂.
 - **Пакет.** Укладка из слоёв разных материалов, пропорциональная нагрузка σx : σy : τxy, расчёт прогрессивного разрушения и диаграмма деформирования. Разрушение слоя определяется по одному из критериев, различающих волокно и матрицу: максимальных напряжений, аппроксимационному, Хашина, максимальных деформаций.
 
-Ссылка `https://avazar.github.io/laminate/#laminate` открывает сразу вкладку «Пакет», а `https://avazar.github.io/laminate/?lang=en` — английскую версию. Язык переключается и кнопкой EN / RU в шапке.
+Ссылка `https://avazar.github.io/composite/strength/#laminate` открывает сразу вкладку «Пакет», а `https://avazar.github.io/composite/strength/?lang=en` — английскую версию. Язык переключается и кнопкой EN / RU в шапке.
 
 Сайт создан в учебных целях. Модели упрощены, свойства материалов — типовые, поэтому результаты могут быть неточными и не годятся для проектных расчётов.
 
 ## Как собрать у себя
 
-Нужен Node.js 18 или новее.
+Нужен Node.js 24 или новее.
 
 ```bash
 npm install
@@ -27,7 +29,7 @@ npm run build
 npm test
 ```
 
-`npm run build` создаёт папку `site/` — обычный статический сайт. Его можно открыть двойным кликом по `site/index.html`: интернет не нужен, библиотеки и шрифты лежат внутри. `npm test` проверяет расчётное ядро: формулы жёсткости, критерии, алгоритм разрушения.
+`npm run build` создаёт папку `site/` — обычный статический сайт. Его можно открыть двойным кликом по `site/index.html`: интернет не нужен, библиотеки и шрифты лежат внутри. `npm test` проверяет переходы между страницами и расчётное ядро: формулы жёсткости, критерии, алгоритм разрушения.
 
 Сайт на GitHub Pages обновляется сам: при каждом изменении ветки `dev` GitHub запускает тесты, сборку и публикацию (`.github/workflows/pages.yml`).
 
@@ -35,6 +37,9 @@ npm test
 
 | Файл | Содержание |
 |---|---|
+| `src/home/` | Главная страница с карточками учебных модулей |
+| `src/main.jsx`, `src/index.html` | Модуль прочности, собирается в `site/strength/` |
+| `src/shared.css`, `src/navigation.js` | Общее оформление и переходы с сохранением языка |
 | `src/core/materials.js` | Свойства материалов: стеклопластик, органопластик, углепластик |
 | `src/core/mech.js` | Закон Гука для слоя, преобразования поворота, жёсткость пакета A = Σ B̄ᵢh̄ᵢ |
 | `src/core/criteria.js` | Семь критериев прочности |
@@ -43,6 +48,10 @@ npm test
 | `src/viz/surface3d.js` | Трёхмерная сцена (three.js) |
 | `src/ui/` | Интерфейс (Preact) |
 | `src/i18n.js` | Тексты интерфейса на русском и английском |
+
+## Добавление темы
+
+Добавьте отдельную точку входа и HTML-шаблон модуля, включите их в `build.mjs`, затем добавьте карточку и тексты RU / EN в `src/home/main.jsx`. Каждая тема публикуется в собственной папке `site/<тема>/index.html`; переходы используйте относительные, через `topicHref()`. Главная не загружает расчётное ядро, KaTeX и three.js.
 
 ## Принятые допущения
 
@@ -63,9 +72,11 @@ npm test
 
 ---
 
-# Laminate · strength lab
+# Composite · composite and structural mechanics
 
-An educational site on failure criteria and progressive failure of composite laminates: **https://avazar.github.io/laminate/?lang=en**
+Learning modules: **https://avazar.github.io/composite/?lang=en**. The first card opens the strength lab; “All topics” returns to the catalog in the same language. The old `https://avazar.github.io/laminate/` address redirects to the strength module, preserving the query string and selected tab.
+
+An educational module on failure criteria and progressive failure of composite laminates: **https://avazar.github.io/composite/strength/?lang=en**
 
 - **Ply.** Failure surfaces in the axes σ₁, σ₂, τ₁₂ for seven criteria (maximum stress, the approximation criterion from V. V. Vasiliev's book, Tsai–Wu, Hashin, maximum strain, Tsai–Hill, Hoffman) and three sections: σ₁–σ₂, σ₁–τ₁₂, σ₂–τ₁₂.
 - **Laminate.** A layup of plies of different materials, proportional loading σx : σy : τxy, progressive failure analysis and the stress–strain curve. Ply failure is detected by one of the criteria that tell fiber from matrix: maximum stress, approximation, Hashin, maximum strain.
@@ -76,7 +87,7 @@ This site is an educational tool. The models are simplified and the material pro
 
 ## Build
 
-Node.js 18 or newer is required.
+Node.js 24 or newer is required.
 
 ```bash
 npm install

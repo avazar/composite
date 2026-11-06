@@ -1,4 +1,4 @@
-// Сборка статического сайта в папку site/: index.html + app.js + app.css + fonts/.
+// Каталог тем и независимые учебные модули в папке site/.
 // Результат открывается двойным кликом по site/index.html и не требует интернета.
 import * as esbuild from 'esbuild';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
@@ -16,7 +16,7 @@ const woff2Only = {
 };
 
 const options = {
-  entryPoints: { app: 'src/main.jsx' },
+  entryPoints: { home: 'src/home/main.jsx', 'strength/app': 'src/main.jsx' },
   bundle: true,
   outdir,
   format: 'iife',
@@ -32,11 +32,19 @@ const options = {
 };
 
 await rm(outdir, { recursive: true, force: true });
-await mkdir(outdir, { recursive: true });
+await mkdir(`${outdir}/strength`, { recursive: true });
 // Метка сборки в адресах app.js и app.css: после обновления сайта браузеры студентов не покажут старую версию из кэша.
 const stamp = Date.now().toString(36);
-const html = await readFile('src/index.html', 'utf8');
-await writeFile(`${outdir}/index.html`, html.replace('href="app.css"', `href="app.css?v=${stamp}"`).replace('src="app.js"', `src="app.js?v=${stamp}"`));
+for (const [source, target, bundle] of [
+  ['src/home/index.html', 'index.html', 'home'],
+  ['src/index.html', 'strength/index.html', 'app'],
+]) {
+  const html = await readFile(source, 'utf8');
+  await writeFile(`${outdir}/${target}`, html
+    .replace(`href="${bundle}.css"`, `href="${bundle}.css?v=${stamp}"`)
+    .replace(`src="${bundle}.js"`, `src="${bundle}.js?v=${stamp}"`));
+}
+await writeFile(`${outdir}/.nojekyll`, '');
 
 // В сборку входит чужой код и шрифты; их лицензии требуют распространять текст лицензии вместе с ними.
 const thirdParty = [
