@@ -55,39 +55,39 @@ export function T2(phiDeg) {
   return [[c * c, s * s, c * s], [s * s, c * c, -c * s], [-2 * c * s, 2 * c * s, c * c - s * s]];
 }
 
-// Жёсткость слоя в осях пакета: [B̄] = [T1]⁻¹[D][T2] = [T2]ᵀ[D][T2]
-export function plyB(m, phiDeg, state = 'intact') {
+// Жёсткость слоя в осях пакета: [A] = [T1]⁻¹[D][T2] = [T2]ᵀ[D][T2]
+export function plyA(m, phiDeg, state = 'intact') {
   const t2 = T2(phiDeg);
   return mulMM(transpose(t2), mulMM(plyD(m, state), t2));
 }
 
 // То же в замкнутом виде — для сверки с матричным вычислением и для чтения.
-export function plyBClosedForm(m, phiDeg) {
+export function plyAClosedForm(m, phiDeg) {
   const c = Math.cos(rad(phiDeg)), s = Math.sin(rad(phiDeg));
   const n12 = nu12(m);
   const k = 1 - n12 * m.nu21;
   const E1 = (m.E1 * GPA) / k, E2 = (m.E2 * GPA) / k, G = m.G12 * GPA;
   const E12 = E1 * n12 + 2 * G;
   const c2 = c * c, s2 = s * s;
-  const B11 = E1 * c2 * c2 + E2 * s2 * s2 + 2 * E12 * c2 * s2;
-  const B22 = E1 * s2 * s2 + E2 * c2 * c2 + 2 * E12 * c2 * s2;
-  const B12 = E1 * n12 + (E1 + E2 - 2 * E12) * c2 * s2;
-  const B14 = (E1 * c2 - E2 * s2 - E12 * (c2 - s2)) * c * s;
-  const B24 = (E1 * s2 - E2 * c2 + E12 * (c2 - s2)) * c * s;
-  const B44 = (E1 + E2 - 2 * E1 * n12) * c2 * s2 + G * (c2 - s2) ** 2;
-  return [[B11, B12, B14], [B12, B22, B24], [B14, B24, B44]];
+  const A11 = E1 * c2 * c2 + E2 * s2 * s2 + 2 * E12 * c2 * s2;
+  const A22 = E1 * s2 * s2 + E2 * c2 * c2 + 2 * E12 * c2 * s2;
+  const A12 = E1 * n12 + (E1 + E2 - 2 * E12) * c2 * s2;
+  const A14 = (E1 * c2 - E2 * s2 - E12 * (c2 - s2)) * c * s;
+  const A24 = (E1 * s2 - E2 * c2 + E12 * (c2 - s2)) * c * s;
+  const A44 = (E1 + E2 - 2 * E1 * n12) * c2 * s2 + G * (c2 - s2) ** 2;
+  return [[A11, A12, A14], [A12, A22, A24], [A14, A24, A44]];
 }
 
-// Жёсткость пакета: A = Σ B̄ᵢ·h̄ᵢ, h̄ᵢ — относительная толщина слоя.
-export function laminateA(plies, states) {
+// Жёсткость пакета: B̄ = Σ Aᵢ·h̄ᵢ, h̄ᵢ — относительная толщина слоя.
+export function laminateB(plies, states) {
   const H = plies.reduce((a, p) => a + p.h, 0);
-  const A = zeros3();
+  const B = zeros3();
   plies.forEach((p, i) => {
-    const B = plyB(p.material, p.angle, states ? states[i] : 'intact');
+    const A = plyA(p.material, p.angle, states ? states[i] : 'intact');
     const hb = p.h / H;
-    for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) A[r][q] += B[r][q] * hb;
+    for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) B[r][q] += A[r][q] * hb;
   });
-  return A;
+  return B;
 }
 
 // Собственные значения и векторы симметричной матрицы 3×3 (метод Якоби).
@@ -123,11 +123,11 @@ export function eigSym3(M) {
   return { values: [a[0][0], a[1][1], a[2][2]], vectors: [0, 1, 2].map((j) => [v[0][j], v[1][j], v[2][j]]) };
 }
 
-// Решение A·ε = n для (возможно) вырожденной жёсткости.
+// Решение B̄·ε = n для (возможно) вырожденной жёсткости.
 // Пакет из «нитяных» слоёв может быть механизмом: если нагрузка имеет составляющую
 // вдоль направления с нулевой жёсткостью, нести её нечем — carries = false.
-export function solveLoad(A, n) {
-  const { values, vectors } = eigSym3(A);
+export function solveLoad(B, n) {
+  const { values, vectors } = eigSym3(B);
   const wmax = Math.max(...values.map(Math.abs));
   const nn = Math.hypot(n[0], n[1], n[2]);
   const eps = [0, 0, 0];
@@ -143,10 +143,10 @@ export function solveLoad(A, n) {
   return { carries: true, eps };
 }
 
-// Технические постоянные пакета. Модуль в направлении нагрузки n: E = 1/(nᵀA⁻¹n); если пакет — механизм, то 0.
-export function laminateModuli(A) {
+// Технические постоянные пакета. Модуль в направлении нагрузки n: E = 1/(nᵀB̄⁻¹n); если пакет — механизм, то 0.
+export function laminateModuli(B) {
   const along = (n) => {
-    const r = solveLoad(A, n);
+    const r = solveLoad(B, n);
     return r.carries ? { E: 1 / dot(n, r.eps), eps: r.eps } : { E: 0, eps: [0, 0, 0] };
   };
   const x = along([1, 0, 0]), y = along([0, 1, 0]), g = along([0, 0, 1]);

@@ -49,8 +49,8 @@ const F = {
   nuRel: 'E_1\\nu_{12}=E_2\\nu_{21}',
   axes: '\\sigma_1,\\ \\sigma_2,\\ \\tau_{12}',
   invF: '1/F',
-  hooke: '\\{\\sigma_x,\\sigma_y,\\tau_{xy}\\}=[A]\\{\\varepsilon_x,\\varepsilon_y,\\gamma_{xy}\\}',
-  A: 'A_{mn}=\\sum \\bar B_{mn}^{(i)}\\bar h_i',
+  hooke: '\\{\\sigma_x,\\sigma_y,\\tau_{xy}\\}=[\\bar B]\\{\\varepsilon_x,\\varepsilon_y,\\gamma_{xy}\\}',
+  B: '\\bar B_{mn}=\\sum A_{mn}^{(i)}\\bar h_i',
   netting: 'E_2=G_{12}=\\nu=0',
   fiber: '\\sigma_1=E_1\\varepsilon_1',
   matrixStress: '\\sigma_2,\\ \\tau_{12}',
@@ -66,7 +66,7 @@ function AboutRu() {
       <p>Однонаправленный слой — ортотропный, плоское напряжённое состояние, оси 1–2 вдоль и поперёк волокон. Свойства материалов — типовые значения для однонаправленных слоёв; <Tex>{F.nu}</Tex> — больший коэффициент Пуассона, <Tex>{F.nuRel}</Tex>. Поверхности построены в осях <Tex>{F.axes}</Tex>; на сцене каждая ось по умолчанию нормирована на свою прочность. Если снять галочку «нормирование», масштаб по всем осям станет одинаковым и будут видны реальные соотношения прочностей.</p>
       <p>Показатель <Tex>F</Tex> — величина, обратная запасу: если все напряжения умножить на <Tex>{F.invF}</Tex>, точка попадёт на предельную поверхность.</p>
       <h3>Пакет</h3>
-      <p>Рассматривается мембранное состояние: <Tex>{F.hooke}</Tex>, <Tex>{F.A}</Tex>. Изгиб не учитывается, поэтому порядок слоёв на результат не влияет.</p>
+      <p>Рассматривается мембранное состояние: <Tex>{F.hooke}</Tex>, <Tex>{F.B}</Tex>. Изгиб не учитывается, поэтому порядок слоёв на результат не влияет.</p>
       <ol>
         <li>Все слои ортотропные. По жёсткости пакета находятся деформации, затем напряжения в осях каждого слоя.</li>
         <li>По выбранному критерию определяется слой, который разрушится первым, нагрузка и режим разрушения.</li>
@@ -88,7 +88,7 @@ function AboutEn() {
       <p>A unidirectional ply is orthotropic and in plane stress; axes 1–2 run along and across the fibers. The material properties are typical values for unidirectional plies. Mind the index convention: <Tex>{F.nu}</Tex> is the major Poisson's ratio, <Tex>{F.nuRel}</Tex>. The surfaces are drawn in the axes <Tex>{F.axes}</Tex>; by default each axis of the scene is normalized by its own strength. Clear the “normalize” box to give all axes the same scale and see the real strength ratios.</p>
       <p>The index <Tex>F</Tex> is the reciprocal of the safety factor: multiplying all stresses by <Tex>{F.invF}</Tex> puts the point on the failure surface.</p>
       <h3>Laminate</h3>
-      <p>The laminate is treated as a membrane: <Tex>{F.hooke}</Tex>, <Tex>{F.A}</Tex>. Bending is neglected, so the stacking order does not affect the result.</p>
+      <p>The laminate is treated as a membrane: <Tex>{F.hooke}</Tex>, <Tex>{F.B}</Tex>. Bending is neglected, so the stacking order does not affect the result.</p>
       <ol>
         <li>All plies are orthotropic. The laminate stiffness gives the strains, then the stresses in the axes of each ply.</li>
         <li>The chosen criterion gives the ply that fails first, the load and the failure mode.</li>

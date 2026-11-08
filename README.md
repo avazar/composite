@@ -59,7 +59,7 @@ npm test
 | `src/main.jsx`, `src/index.html` | Модуль прочности, собирается в `site/strength/` |
 | `src/shared.css`, `src/navigation.js` | Общее оформление и переходы с сохранением языка |
 | `src/core/materials.js` | Свойства материалов: стеклопластик, органопластик, углепластик |
-| `src/core/mech.js` | Закон Гука для слоя, преобразования поворота, жёсткость пакета A = Σ B̄ᵢh̄ᵢ |
+| `src/core/mech.js` | Закон Гука для слоя, преобразования поворота, жёсткость пакета B̄ = Σ Aᵢh̄ᵢ |
 | `src/core/criteria.js` | Семь критериев прочности |
 | `src/core/progressive.js` | Алгоритм прогрессивного разрушения |
 | `src/core/contour.js`, `src/core/bounds.js` | Линии срезов и габариты поверхностей |

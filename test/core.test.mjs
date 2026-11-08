@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { MATERIALS } from '../src/core/materials.js';
-import { plyB, plyBClosedForm, laminateA, laminateModuli, eigSym3, solveLoad, T1, T2, mulMM, transpose } from '../src/core/mech.js';
+import { plyA, plyAClosedForm, laminateB, laminateModuli, eigSym3, solveLoad, T1, T2, mulMM, transpose } from '../src/core/mech.js';
 import { CRITERIA, DEFAULT_OPTIONS, criterionById } from '../src/core/criteria.js';
 import { simulate, sampleAt } from '../src/core/progressive.js';
 import { contour } from '../src/core/contour.js';
@@ -10,9 +10,9 @@ const [glass, aramid, carbon] = MATERIALS;
 const close = (a, b, rel = 1e-9, msg) => assert.ok(Math.abs(a - b) <= rel * Math.max(1, Math.abs(a), Math.abs(b)), msg || `${a} ≠ ${b}`);
 const layup = (m, angles) => angles.map((angle) => ({ material: m, angle, h: 1 }));
 
-test('B̄ = T2ᵀ·D·T2 совпадает с формулами в замкнутом виде', () => {
+test('A = T2ᵀ·D·T2 совпадает с формулами в замкнутом виде', () => {
   for (const m of MATERIALS) for (const phi of [0, 17, 30, 45, 60, 90, -33, 123]) {
-    const a = plyB(m, phi), b = plyBClosedForm(m, phi);
+    const a = plyA(m, phi), b = plyAClosedForm(m, phi);
     for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) close(a[i][j], b[i][j], 1e-10, `φ=${phi} [${i}${j}]`);
   }
 });
@@ -23,7 +23,7 @@ test('T1(φ)⁻¹ = T2(φ)ᵀ', () => {
 });
 
 test('квазиизотропный пакет [0/±45/90] изотропен в плоскости', () => {
-  const A = laminateA(layup(carbon, [0, 45, -45, 90]));
+  const A = laminateB(layup(carbon, [0, 45, -45, 90]));
   close(A[0][0], A[1][1]);
   close(A[0][2], 0, 1e-9);
   close(A[1][2], 0, 1e-9);
@@ -34,7 +34,7 @@ test('квазиизотропный пакет [0/±45/90] изотропен �
 });
 
 test('однонаправленный слой: Ex = E1, Ey = E2, Gxy = G12, ν = ν21', () => {
-  const md = laminateModuli(laminateA(layup(glass, [0])));
+  const md = laminateModuli(laminateB(layup(glass, [0])));
   close(md.Ex, 60000, 1e-9);
   close(md.Ey, 13000, 1e-9);
   close(md.Gxy, 3400, 1e-9);
@@ -42,7 +42,7 @@ test('однонаправленный слой: Ex = E1, Ey = E2, Gxy = G12, ν
 });
 
 test('собственное разложение восстанавливает матрицу', () => {
-  const A = laminateA(layup(aramid, [10, 55, -70]));
+  const A = laminateB(layup(aramid, [10, 55, -70]));
   const { values, vectors } = eigSym3(A);
   for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
     const r = values.reduce((s, w, k) => s + w * vectors[k][i] * vectors[k][j], 0);
@@ -52,7 +52,7 @@ test('собственное разложение восстанавливает
 
 test('нитяной пакет ±45 не несёт одноосное растяжение, но несёт σx = σy', () => {
   const plies = layup(carbon, [45, -45]);
-  const A = laminateA(plies, ['matrix', 'matrix']);
+  const A = laminateB(plies, ['matrix', 'matrix']);
   assert.equal(solveLoad(A, [1, 0, 0]).carries, false);
   assert.equal(solveLoad(A, [1, 1, 0]).carries, true);
   assert.equal(solveLoad(A, [0, 0, 1]).carries, true);

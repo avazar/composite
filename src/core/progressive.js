@@ -1,7 +1,7 @@
 // Прогрессивное разрушение пакета при пропорциональном нагружении {σx, σy, τxy} = λ·n.
 //
 // Алгоритм:
-//   1. Все слои — ортотропные (связующее работает). Считаем жёсткость пакета A = Σ B̄ᵢh̄ᵢ.
+//   1. Все слои — ортотропные (связующее работает). Считаем жёсткость пакета B̄ = Σ Aᵢh̄ᵢ.
 //   2. Находим деформации пакета, напряжения в осях каждого слоя и по выбранному критерию — нагрузку λ,
 //      при которой слой разрушится, и режим разрушения.
 //   3. Разрушается слой с наименьшей λ. Разрушилось волокно — слой выключается. Разрушилась матрица —
@@ -16,7 +16,7 @@
 // control: 'strain' — жёсткое нагружение (после разрушения слоя удерживается деформация в направлении нагрузки);
 //          'load'   — мягкое нагружение (удерживается нагрузка).
 
-import { T2, plyD, mulMV, laminateA, laminateModuli, eigSym3, transpose, dot } from './mech.js';
+import { T2, plyD, mulMV, laminateB, laminateModuli, eigSym3, transpose, dot } from './mech.js';
 import { DEFAULT_OPTIONS, modeList } from './criteria.js';
 
 const TOL = 1e-6;
@@ -88,8 +88,8 @@ function firstFailure(ply, state, sa, sb, lam0, criterion, options) {
 // должно выполняться само: если нагрузка туда не действует, пакет работает как обычно ('regular');
 // если действует, равновесие возможно при единственной нагрузке lam0, и пакет течёт вдоль flow ('flow');
 // иначе нести нагрузку нечем ('mechanism').
-function solveAffine(A, n, R) {
-  const { values, vectors } = eigSym3(A);
+function solveAffine(B, n, R) {
+  const { values, vectors } = eigSym3(B);
   const wmax = Math.max(...values.map(Math.abs));
   const a = [0, 0, 0], b = [0, 0, 0], nullVecs = [];
   for (let k = 0; k < 3; k++) {
@@ -116,7 +116,7 @@ function solveAffine(A, n, R) {
 }
 
 function buildStage(plies, states, resid, n, epsNow, keepNull) {
-  const A = laminateA(plies, states);
+  const B = laminateB(plies, states);
   const H = plies.reduce((s, p) => s + p.h, 0);
   const R = [0, 0, 0];
   plies.forEach((p, i) => {
@@ -124,13 +124,13 @@ function buildStage(plies, states, resid, n, epsNow, keepNull) {
     const r = mulMV(transpose(T2(p.angle)), resid[i]); // напряжения слоя в осях пакета
     for (let j = 0; j < 3; j++) R[j] += (r[j] * p.h) / H;
   });
-  const sol = solveAffine(A, n, R);
+  const sol = solveAffine(B, n, R);
   if (keepNull) {
     // Составляющая деформации вдоль направлений нулевой жёсткости сохраняется: её ничто не возвращает.
     for (const v of sol.nullVecs) { const pe = dot(v, epsNow); for (let i = 0; i < 3; i++) sol.b[i] += pe * v[i]; }
   }
   const stage = {
-    states: states.slice(), A, moduli: laminateModuli(A), kind: sol.kind, carries: sol.kind !== 'mechanism',
+    states: states.slice(), B, moduli: laminateModuli(B), kind: sol.kind, carries: sol.kind !== 'mechanism',
     a: sol.a, b: sol.b, c: sol.c, lam0: sol.lam0, flow: sol.flow, plies: [], lamCrit: Infinity,
   };
   if (!stage.carries) return stage;
